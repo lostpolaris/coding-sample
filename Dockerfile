@@ -1,6 +1,7 @@
 FROM docker.io/python
 
-COPY . .
+WORKDIR /app
+COPY . /app/
 
 RUN pip install -r requirements.txt
 
