@@ -1,0 +1,25 @@
+services:
+    start-api:
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        image: heb-coding-challenge
+        container_name: heb-coding-challenge
+        environment:
+            - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+            - ME_CONFIG_MONGODB_ADMINPASSWORD=example
+            - ME_CONFIG_MONGODB_URL=mongodb://root:example@mongo:27017/
+        volumes:
+            - /etc/localtime:/etc/localtime:ro
+        ports:
+            - 9999:5000
+        links:
+            - mongo:mongo
+
+    start-mongo:
+        image: mongo
+        volumes:
+            - /etc/localtime:/etc/localtime:ro
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=root
+            - MONGO_INITDB_ROOT_PASSWORD=example
