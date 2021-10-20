@@ -6,6 +6,7 @@ from bson.objectid import ObjectId
 from bson.json_util import dumps
 import hashlib
 import json
+import requests
 
 app = Flask("HEB Coding Challenge")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "secrets.env"
@@ -27,22 +28,24 @@ def images(imageId: str = None):
             if "file" not in request.form:
                 return Response("file not provided", 400)
             else:
-                im_file = request.form.get("file")
+                # file exists as url, get file and get filename
+                url = request.form.get("file")
+                t_label = os.path.basename(url)
+                im_file = requests.get(url).content
+                image = vision.Image(source=vision.ImageSource(image_uri=url))
         else:
-            # get file from body
-            im_file = request.files["file"]
-
-        # if url was provided, make im_file a file
-        if isinstance(im_file, str):
-            pass
+            # get file and file_name from body
+            im_file = request.files["file"].read()
+            t_label = im_file.filename
+            image = vision.Image(content=im_file)
 
         # get opt args label and bObjDet
-        label = request.form.get("label", request.files["file"].filename)
+        label = request.form.get("label", t_label)
         bObjDet = request.form.get("bObjDet", False)
         # create basic metadata
         obj = {
             "label": label,
-            "hash": hashlib.md5(im_file.read()).hexdigest(),
+            "hash": hashlib.md5(im_file).hexdigest(),
         }
 
         # return error if file_hash is in db
@@ -51,10 +54,6 @@ def images(imageId: str = None):
         # if object det is enabled
         if bObjDet:
             # send bytestream to for annotation
-            im_file.seek(0)
-            content = im_file.read()
-            image = vision.Image(content=content)
-            # performs label detection on the image file
             response = client.label_detection(image=image)
             if response.error.message:
                 return Response(
@@ -100,5 +99,4 @@ def images(imageId: str = None):
 if __name__ == "__main__":
     # TODO: handle files as urls
     # TODO: create a volume for persistant store of mongodb across restarts
-    # TODO: create a init mongodb collection fn in case of fresh instance
     app.run(port=5000, host="0.0.0.0", debug=True)
