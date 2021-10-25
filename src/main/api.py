@@ -9,35 +9,28 @@ import json
 import requests
 
 app = Flask("HEB Coding Challenge")
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "secrets.env"
 mc = MongoClient(os.getenv("ME_CONFIG_MONGODB_URL"))["heb-interview"]["images"]
 client = vision.ImageAnnotatorClient()
 
 
-@app.route("/")
-def hello_world():
-    return "hello world!"
-
-
 @app.route("/images", methods=["GET"])
 @app.route("/images/", methods=["GET", "POST"])
-@app.route("/images/<string:imageId>", methods=["GET"])
+@app.route("/images/<string:imageId>", methods=["GET", "DELETE"])
 def images(imageId: str = None):
     if request.method == "POST":
-        if "file" not in request.files:
-            if "file" not in request.form:
-                return Response("file not provided", 400)
-            else:
-                # file exists as url, get file and get filename
-                url = request.form.get("file")
-                t_label = os.path.basename(url)
-                im_file = requests.get(url).content
-                image = vision.Image(source=vision.ImageSource(image_uri=url))
-        else:
+        if "file" in request.files:
             # get file and file_name from body
             im_file = request.files["file"].read()
             t_label = im_file.filename
             image = vision.Image(content=im_file)
+        elif "file" in request.form:
+            # file exists as url, get file and get filename
+            url = request.form.get("file")
+            t_label = os.path.basename(url)
+            im_file = requests.get(url).content
+            image = vision.Image(source=vision.ImageSource(image_uri=url))
+        else:
+            return Response("file not provided", 400)
 
         # get opt args label and bObjDet
         label = request.form.get("label", t_label)
@@ -90,13 +83,15 @@ def images(imageId: str = None):
             }
         # return 200 with image metadata of all images
         else:
-            print("here")
             return {"ok": json.loads(dumps((mc.find())))}
+
+    elif request.method == "DELETE":
+        # delete image from db
+        return {"ok": mc.remove({"_id": ObjectId(imageId)})}
 
     return 200
 
 
 if __name__ == "__main__":
-    # TODO: handle files as urls
     # TODO: create a volume for persistant store of mongodb across restarts
     app.run(port=5000, host="0.0.0.0", debug=True)
