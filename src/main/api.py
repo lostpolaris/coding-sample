@@ -21,7 +21,7 @@ def images(imageId: str = None):
         if "file" in request.files:
             # get file and file_name from body
             im_file = request.files["file"].read()
-            t_label = im_file.filename
+            t_label = request.files["file"].filename
             image = vision.Image(content=im_file)
         elif "file" in request.form:
             # file exists as url, get file and get filename
@@ -74,6 +74,9 @@ def images(imageId: str = None):
     elif request.method == "GET":
         # return 200 with metadata of selected image
         if imageId:
+            if not ObjectId.is_valid(imageId):
+                return Response("invalid id", 400)
+            print(imageId)
             return {"ok": json.loads(dumps(mc.find({"_id": ObjectId(imageId)})))}
         # return 200 with images of detect objects
         elif request.args.get("objects"):
@@ -93,5 +96,4 @@ def images(imageId: str = None):
 
 
 if __name__ == "__main__":
-    # TODO: create a volume for persistant store of mongodb across restarts
     app.run(port=5000, host="0.0.0.0", debug=True)
