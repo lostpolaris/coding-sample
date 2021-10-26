@@ -1,3 +1,4 @@
+from typing import Any
 from flask import Flask, request, Response
 from google.cloud import vision
 import os
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 @app.route("/images", methods=["GET"])
 @app.route("/images/", methods=["GET", "POST"])
 @app.route("/images/<string:imageId>", methods=["GET", "DELETE"])
-def images(imageId: str = None):
+def images(imageId: str = None) -> Any:
     if request.method == "POST":
         if "file" in request.files:
             # get file and file_name from body

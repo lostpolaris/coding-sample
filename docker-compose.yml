@@ -24,9 +24,8 @@ services:
         image: mongo
         volumes:
             - /etc/localtime:/etc/localtime:ro
-        container_name: mongo
-        volumes:
             - ./data:/data/db
+        container_name: mongo
         ports:
             - 27017:27017
         environment:

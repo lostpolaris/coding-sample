@@ -59,7 +59,6 @@ class TestRequests(unittest.TestCase):
     def test_get_image_id(self):
         # get certain image id
         # response with that image_id
-        # TODO: this is getting passed in as ObjectId, but it's a string | postman will send as string
         r = requests.get("http://localhost:5000/images/61774a6aff5273fc3e8e12ed")
         self.assertEqual(r.status_code, 200)
         self.assertDictEqual(r.json(), {"ok": [json.loads(dumps(self.document))]})
