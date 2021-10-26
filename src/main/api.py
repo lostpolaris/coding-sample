@@ -7,10 +7,12 @@ from bson.json_util import dumps
 import hashlib
 import json
 import requests
+import logging
 
 app = Flask("HEB Coding Challenge")
 mc = MongoClient(os.getenv("ME_CONFIG_MONGODB_URL"))["heb-interview"]["images"]
 client = vision.ImageAnnotatorClient()
+logger = logging.getLogger(__name__)
 
 
 @app.route("/images", methods=["GET"])
@@ -63,11 +65,11 @@ def images(imageId: str = None):
             ]
 
         # insert document to mongo
-        _id = mc.insert(obj)
+        _id = mc.insert_one(obj)
         return {
             "ok": {
                 "label": label,
-                "id": str(_id),
+                "id": str(_id.inserted_id),
                 "descriptions": obj.get("descriptions", None),
             }
         }
@@ -76,7 +78,6 @@ def images(imageId: str = None):
         if imageId:
             if not ObjectId.is_valid(imageId):
                 return Response("invalid id", 400)
-            print(imageId)
             return {"ok": json.loads(dumps(mc.find({"_id": ObjectId(imageId)})))}
         # return 200 with images of detect objects
         elif request.args.get("objects"):
@@ -87,6 +88,7 @@ def images(imageId: str = None):
         # return 200 with image metadata of all images
         else:
             return {"ok": json.loads(dumps((mc.find())))}
+            # lol
 
     elif request.method == "DELETE":
         # delete image from db
