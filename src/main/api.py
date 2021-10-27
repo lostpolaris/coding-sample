@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 @app.route("/images", methods=["GET"])
 @app.route("/images/", methods=["GET", "POST"])
 @app.route("/images/<string:imageId>", methods=["GET", "DELETE"])
-def images(imageId: str = None) -> Any:
+def images(imageId: str = None):
     if request.method == "POST":
         if "file" in request.files:
             # get file and file_name from body
