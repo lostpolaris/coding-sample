@@ -1,4 +1,4 @@
-# heb-coding-challenge
+# coding-sample
 
 ## Overview
 
