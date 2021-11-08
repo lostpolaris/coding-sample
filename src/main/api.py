@@ -92,6 +92,8 @@ def images(imageId: str = None):
             # lol
 
     elif request.method == "DELETE":
+        if not mc.find_one({"_id": ObjectId(imageId)}):
+            return Response("file does not exist", 400)
         # delete image from db
         return {"ok": mc.remove({"_id": ObjectId(imageId)})}
 

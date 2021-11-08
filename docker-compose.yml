@@ -3,8 +3,8 @@ services:
         build:
             context: ./src/main
             dockerfile: ./Dockerfile
-        image: heb-coding-challenge
-        container_name: heb-coding-challenge
+        image: coding-sample
+        container_name: coding-sample
         volumes:
             - ./src/main:/app
             - /etc/localtime:/etc/localtime:ro
@@ -38,8 +38,8 @@ services:
         build:
             context: ./src/main
             dockerfile: ./Dockerfile
-        image: heb-coding-challenge
-        container_name: heb-coding-challenge-test
+        image: coding-sample
+        container_name: coding-sample-test
         volumes:
             - ./src/main:/app
             - ./src/tests:/app/tests

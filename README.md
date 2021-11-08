@@ -2,6 +2,7 @@
 
 ## Overview
 
+-   post an image w/ or w/o object detection enabled, will store in mongodb, user can thereafter query all or specific images based on ObjectIds or object labels
 -   uses docker, docker-compose | python, flask, google vision | mongodb
 -   you need to add secrets.env to the src/main/ directory consisting of your google vision api json
 -   look at src/tests/tests.py to see what data and in what form the api expects to ingest
@@ -15,7 +16,7 @@
 
 ## How to Test
 
--   `docker exec -it heb-coding-challenge-test /bin/bash`
+-   `docker exec -it coding-sample-test /bin/bash`
 -   in that container
     -   `cd tests/`
     -   `python tests.py`

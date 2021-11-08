@@ -105,8 +105,7 @@ class TestRequests(unittest.TestCase):
         self.assertDictEqual(r.json(), {"ok": {"n": 1, "ok": 1.0}})
         # delete an image that doesn't exist
         r = requests.delete("http://localhost:5000/images/61774a6aff5273fc3e8e12ed")
-        self.assertEqual(r.status_code, 200)
-        self.assertDictEqual(r.json(), {"ok": {"n": 0, "ok": 1.0}})
+        self.assertEqual(r.status_code, 400)
 
 
 def getSuite():
